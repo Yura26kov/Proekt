@@ -1,0 +1,12 @@
+body {
+    font-family: 'Segoe UI', sans-serif;
+}
+
+h1, h2 {
+    color: #343a40;
+}
+
+.logo {
+    height: 60px;
+    margin: 10px;
+}

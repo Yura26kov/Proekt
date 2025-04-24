@@ -1,0 +1,198 @@
+{% extends "base.html" %}
+
+{% block title %}Панель администратора{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Статистика -->
+    <div class="row g-3 mb-4">
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="text-muted mb-2">Пользователи</h6>
+                            <h3 class="mb-0">{{ total_users }}</h3>
+                        </div>
+                        <div class="bg-primary bg-opacity-10 p-3 rounded">
+                            <i class="bi bi-people-fill text-primary fs-4"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="text-muted mb-2">Транспорт</h6>
+                            <h3 class="mb-0">{{ total_vehicles }}</h3>
+                        </div>
+                        <div class="bg-success bg-opacity-10 p-3 rounded">
+                            <i class="bi bi-truck text-success fs-4"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="text-muted mb-2">Активных</h6>
+                            <h3 class="mb-0">{{ active_vehicles }}</h3>
+                        </div>
+                        <div class="bg-info bg-opacity-10 p-3 rounded">
+                            <i class="bi bi-check-circle text-info fs-4"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="text-muted mb-2">На обслуживании</h6>
+                            <h3 class="mb-0">{{ maintenance_vehicles }}</h3>
+                        </div>
+                        <div class="bg-warning bg-opacity-10 p-3 rounded">
+                            <i class="bi bi-tools text-warning fs-4"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Таблицы -->
+    <div class="row g-3">
+        <div class="col-md-6">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-white border-0 py-3">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">Пользователи</h5>
+                        <a href="{{ url_for('add_user') }}" class="btn btn-primary btn-sm">
+                            <i class="bi bi-plus-lg"></i> Добавить
+                        </a>
+                    </div>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover table-sm align-middle mb-0">
+                            <thead class="bg-light">
+                                <tr>
+                                    <th class="py-2 px-3 small text-muted">Имя</th>
+                                    <th class="py-2 px-3 small text-muted">Email</th>
+                                    <th class="py-2 px-3 small text-muted">Роль</th>
+                                    <th class="py-2 px-3 small text-muted">Действия</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for user in users %}
+                                <tr>
+                                    <td class="py-2 px-3">{{ user.username }}</td>
+                                    <td class="py-2 px-3">{{ user.email }}</td>
+                                    <td class="py-2 px-3">
+                                        {% if user.role == 'admin' %}
+                                            <span class="badge bg-danger">Админ</span>
+                                        {% elif user.role == 'manager' %}
+                                            <span class="badge bg-warning">Менеджер</span>
+                                        {% else %}
+                                            <span class="badge bg-info">Пользователь</span>
+                                        {% endif %}
+                                    </td>
+                                    <td class="py-1 px-2">
+                                        <div class="btn-group btn-group-sm">
+                                            <a href="{{ url_for('user_data', id=user.id) }}" class="btn btn-outline-info" title="Просмотр">
+                                                <i class="bi bi-eye"></i>
+                                            </a>
+                                            <a href="{{ url_for('edit_user', id=user.id) }}" class="btn btn-outline-primary" title="Редактировать">
+                                                <i class="bi bi-pencil"></i>
+                                            </a>
+                                            <a href="{{ url_for('delete_user', id=user.id) }}" class="btn btn-outline-danger" title="Удалить" 
+                                               onclick="return confirm('Вы уверены, что хотите удалить этого пользователя?')">
+                                                <i class="bi bi-trash"></i>
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-white border-0 py-3">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">Транспортные средства</h5>
+                        <a href="{{ url_for('add_vehicle') }}" class="btn btn-primary btn-sm">
+                            <i class="bi bi-plus-lg"></i> Добавить
+                        </a>
+                    </div>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover table-sm align-middle mb-0">
+                            <thead class="bg-light">
+                                <tr>
+                                    <th class="py-2 px-3 small text-muted">Название</th>
+                                    <th class="py-2 px-3 small text-muted">Тип</th>
+                                    <th class="py-2 px-3 small text-muted">Статус</th>
+                                    <th class="py-2 px-3 small text-muted">Действия</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for vehicle in vehicles %}
+                                <tr>
+                                    <td class="py-2 px-3">{{ vehicle.name }}</td>
+                                    <td class="py-2 px-3">{{ vehicle.type|translate_vehicle_type }}</td>
+                                    <td class="py-2 px-3">
+                                        {% if vehicle.status == 'active' %}
+                                        <span class="badge bg-success">Активен</span>
+                                        {% elif vehicle.status == 'inactive' %}
+                                        <span class="badge bg-secondary">Неактивен</span>
+                                        {% elif vehicle.status == 'maintenance' %}
+                                        <span class="badge bg-warning">На обслуживании</span>
+                                        {% endif %}
+                                    </td>
+                                    <td class="py-1 px-2">
+                                        <div class="btn-group btn-group-sm">
+                                            <a href="{{ url_for('vehicle_details', vehicle_id=vehicle.id) }}" class="btn btn-outline-info" title="Просмотр">
+                                                <i class="bi bi-eye"></i>
+                                            </a>
+                                            <a href="{{ url_for('edit_vehicle', vehicle_id=vehicle.id) }}" class="btn btn-outline-primary" title="Редактировать">
+                                                <i class="bi bi-pencil"></i>
+                                            </a>
+                                            <a href="{{ url_for('delete_vehicle', vehicle_id=vehicle.id) }}" class="btn btn-outline-danger" title="Удалить"
+                                               onclick="return confirm('Вы уверены, что хотите удалить это транспортное средство?')">
+                                                <i class="bi bi-trash"></i>
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function confirmDelete(url, name) {
+    if (confirm('Вы уверены, что хотите удалить ' + name + '?')) {
+        window.location.href = url;
+    }
+}
+</script>
+{% endblock %}

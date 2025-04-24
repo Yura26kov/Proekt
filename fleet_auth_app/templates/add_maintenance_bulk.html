@@ -1,0 +1,100 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-12">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h2 class="mb-0">Массовое добавление ТО</h2>
+                        <a href="javascript:history.back()" class="btn btn-secondary">
+                            <i class="fas fa-arrow-left me-2"></i>Назад
+                        </a>
+                    </div>
+
+                    <form method="POST" class="needs-validation" novalidate>
+                        <div class="row mb-4">
+                            <div class="col-md-4">
+                                <label for="date" class="form-label">Дата обслуживания</label>
+                                <input type="date" class="form-control" id="date" name="date" value="{{ today }}" required>
+                                <div class="invalid-feedback">
+                                    Пожалуйста, укажите дату
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Транспорт</th>
+                                        <th>Описание</th>
+                                        <th>Стоимость</th>
+                                        <th>Пробег</th>
+                                        <th>Следующее ТО (км)</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for vehicle in vehicles %}
+                                    <tr>
+                                        <td>{{ vehicle.name }}</td>
+                                        <td>
+                                            <input type="text" class="form-control" name="description_{{ vehicle.id }}" placeholder="Описание работ">
+                                        </td>
+                                        <td>
+                                            <div class="input-group">
+                                                <input type="number" step="0.01" class="form-control" name="cost_{{ vehicle.id }}" placeholder="0.00">
+                                                <span class="input-group-text">₽</span>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div class="input-group">
+                                                <input type="number" step="0.1" class="form-control" name="mileage_{{ vehicle.id }}" placeholder="0.0">
+                                                <span class="input-group-text">км</span>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div class="input-group">
+                                                <input type="number" step="0.1" class="form-control" name="next_mileage_{{ vehicle.id }}" placeholder="0.0">
+                                                <span class="input-group-text">км</span>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <div class="d-flex justify-content-end gap-2 mt-4">
+                            <a href="{{ url_for('maintenance') }}" class="btn btn-outline-secondary">
+                                <i class="fas fa-times me-2"></i>Отмена
+                            </a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save me-2"></i>Сохранить
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Валидация формы
+(function () {
+    'use strict'
+    var forms = document.querySelectorAll('.needs-validation')
+    Array.prototype.slice.call(forms).forEach(function (form) {
+        form.addEventListener('submit', function (event) {
+            if (!form.checkValidity()) {
+                event.preventDefault()
+                event.stopPropagation()
+            }
+            form.classList.add('was-validated')
+        }, false)
+    })
+})()
+</script>
+{% endblock %} 

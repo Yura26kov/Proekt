@@ -1,0 +1,173 @@
+{% extends "base.html" %}
+
+{% block title %}Главная страница{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Приветствие и краткая статистика -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h2 class="mb-1">Добро пожаловать, {{ current_user.username }}!</h2>
+                        </div>
+                        <div class="text-end">
+                            <p class="mb-1"><strong>Текущая дата:</strong> {{ current_date.strftime('%d.%m.%Y') }}</p>
+                            <p class="mb-0"><strong>Время:</strong> {{ current_date.strftime('%H:%M') }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Основная статистика -->
+    <div class="row g-3 mb-4">
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="text-muted mb-2">Транспортные средства</h6>
+                            <h3 class="mb-0">{{ total_vehicles }}</h3>
+                            <small class="text-muted">{{ active_vehicles }} активных</small>
+                        </div>
+                        <div class="bg-primary bg-opacity-10 p-3 rounded">
+                            <i class="bi bi-truck text-primary fs-4"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="text-muted mb-2">Заправки</h6>
+                            <h3 class="mb-0">{{ total_fuelings }}</h3>
+                            <small class="text-muted">{{ "%.1f"|format(total_fuel_volume) }} л за месяц</small>
+                        </div>
+                        <div class="bg-success bg-opacity-10 p-3 rounded">
+                            <i class="bi bi-fuel-pump text-success fs-4"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="text-muted mb-2">Обслуживание</h6>
+                            <h3 class="mb-0">{{ total_maintenance }}</h3>
+                            <small class="text-muted">за месяц</small>
+                        </div>
+                        <div class="bg-warning bg-opacity-10 p-3 rounded">
+                            <i class="bi bi-tools text-warning fs-4"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="text-muted mb-2">Расходы</h6>
+                            <h3 class="mb-0">{{ "%.2f"|format(total_expenses) }} ₽</h3>
+                            <small class="text-muted">за текущий месяц</small>
+                        </div>
+                        <div class="bg-danger bg-opacity-10 p-3 rounded">
+                            <i class="bi bi-cash-stack text-danger fs-4"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Последние записи -->
+    <div class="row g-3">
+        <!-- Последние заправки -->
+        <div class="col-md-6">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-header bg-white border-0 py-3">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0 text-primary">Последние заправки</h5>
+                        <a href="{{ url_for('fuel') }}" class="btn btn-outline-primary btn-sm">
+                            <i class="bi bi-arrow-right"></i>
+                        </a>
+                    </div>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover table-sm align-middle mb-0">
+                            <thead class="bg-light">
+                                <tr>
+                                    <th class="py-2 px-3 small text-muted">Дата</th>
+                                    <th class="py-2 px-3 small text-muted">ТС</th>
+                                    <th class="py-2 px-3 small text-muted">Объем</th>
+                                    <th class="py-2 px-3 small text-muted">Стоимость</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for fueling in recent_fuelings %}
+                                <tr>
+                                    <td class="py-2 px-3">{{ fueling.date.strftime('%d.%m.%Y') }}</td>
+                                    <td class="py-2 px-3">{{ fueling.vehicle.name }}</td>
+                                    <td class="py-2 px-3">{{ "%.1f"|format(fueling.fuel_quantity) }} л</td>
+                                    <td class="py-2 px-3">{{ "%.2f"|format(fueling.fuel_cost) }} ₽</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Последнее обслуживание -->
+        <div class="col-md-6">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-header bg-white border-0 py-3">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0 text-primary">Последнее обслуживание</h5>
+                        <a href="{{ url_for('maintenance') }}" class="btn btn-outline-primary btn-sm">
+                            <i class="bi bi-arrow-right"></i>
+                        </a>
+                    </div>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover table-sm align-middle mb-0">
+                            <thead class="bg-light">
+                                <tr>
+                                    <th class="py-2 px-3 small text-muted">Дата</th>
+                                    <th class="py-2 px-3 small text-muted">ТС</th>
+                                    <th class="py-2 px-3 small text-muted">Описание</th>
+                                    <th class="py-2 px-3 small text-muted">Стоимость</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for maintenance in recent_maintenance %}
+                                <tr>
+                                    <td class="py-2 px-3">{{ maintenance.date.strftime('%d.%m.%Y') }}</td>
+                                    <td class="py-2 px-3">{{ maintenance.vehicle.name }}</td>
+                                    <td class="py-2 px-3">{{ maintenance.description[:30] }}{% if maintenance.description|length > 30 %}...{% endif %}</td>
+                                    <td class="py-2 px-3">{{ "%.2f"|format(maintenance.cost) }} ₽</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

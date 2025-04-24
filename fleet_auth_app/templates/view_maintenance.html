@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="card border-0 shadow-sm">
+        <div class="card-header bg-primary text-white">
+            <h5 class="mb-0">Детали технического обслуживания</h5>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <p><strong>Дата:</strong> {{ record.date.strftime('%d.%m.%Y') }}</p>
+                    <p><strong>Транспортное средство:</strong> {{ record.vehicle.name }} ({{ record.vehicle.plate }})</p>
+                    <p><strong>Описание:</strong> {{ record.description }}</p>
+                </div>
+                <div class="col-md-6">
+                    <p><strong>Пробег:</strong> {{ "%.1f"|format(record.mileage) }} км</p>
+                    <p><strong>Стоимость:</strong> {{ "%.2f"|format(record.cost) }} ₽</p>
+                    <p><strong>Следующее ТО (пробег):</strong> {{ "%.1f"|format(record.next_maintenance_mileage) }} км</p>
+                </div>
+            </div>
+            <div class="mt-4">
+                <a href="javascript:history.back()" class="btn btn-secondary">
+                    <i class="bi bi-arrow-left"></i>Назад
+                </a>
+                {% if current_user.role in ['admin', 'manager'] %}
+                <a href="{{ url_for('edit_maintenance', id=record.id) }}" class="btn btn-primary">
+                    <i class="bi bi-pencil"></i>Редактировать
+                </a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

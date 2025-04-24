@@ -1,0 +1,33 @@
+{% extends 'layout.html' %}
+
+{% block title %}Транспорт{% endblock %}
+
+{% block content %}
+<h2>Список транспорта</h2>
+<table class="table table-striped table-hover">
+    <thead class="table-dark">
+        <tr>
+            <th>ID</th>
+            <th>Название</th>
+            <th>Тип</th>
+            <th>Госномер</th>
+            <th>Марка</th>
+            <th>VIN</th>
+            <th>Состояние</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for v in vehicles %}
+        <tr>
+            <td>{{ v.id }}</td>
+            <td>{{ v.name }}</td>
+            <td>{{ v.type }}</td>
+            <td>{{ v.plate }}</td>
+            <td>{{ v.brand }}</td>
+            <td>{{ v.vin }}</td>
+            <td>{{ v.status }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

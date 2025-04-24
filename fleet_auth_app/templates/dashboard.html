@@ -1,0 +1,194 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>Панель управления</h2>
+    
+    <div class="row mt-4">
+        <!-- Статистика -->
+        <div class="col-md-3 mb-4">
+            <div class="card bg-primary text-white">
+                <div class="card-body">
+                    <h6 class="card-title">Всего транспортных средств</h6>
+                    <h2 class="card-text">{{ vehicles|length }}</h2>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-3 mb-4">
+            <div class="card bg-success text-white">
+                <div class="card-body">
+                    <h6 class="card-title">Активных</h6>
+                    <h2 class="card-text">{{ vehicles|selectattr('status', 'equalto', 'active')|list|length }}</h2>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-3 mb-4">
+            <div class="card bg-warning text-white">
+                <div class="card-body">
+                    <h6 class="card-title">На обслуживании</h6>
+                    <h2 class="card-text">{{ vehicles|selectattr('status', 'equalto', 'maintenance')|list|length }}</h2>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-3 mb-4">
+            <div class="card bg-danger text-white">
+                <div class="card-body">
+                    <h6 class="card-title">В ремонте</h6>
+                    <h2 class="card-text">{{ vehicles|selectattr('status', 'equalto', 'repair')|list|length }}</h2>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Графики -->
+        <div class="col-md-6 mb-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Расход топлива</h5>
+                </div>
+                <div class="card-body">
+                    <canvas id="fuelChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6 mb-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Техническое обслуживание</h5>
+                </div>
+                <div class="card-body">
+                    <canvas id="maintenanceChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Последние записи ТО -->
+        <div class="col-md-6 mb-4">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="card-title mb-0">Последние ТО</h5>
+                    <a href="{{ url_for('maintenance') }}" class="btn btn-sm btn-primary">Все записи</a>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-sm">
+                            <thead>
+                <tr>
+                                    <th>Дата</th>
+                                    <th>Транспорт</th>
+                                    <th>Описание</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for record in maintenance_records[:5] %}
+                                <tr>
+                                    <td>{{ record.date.strftime('%d.%m.%Y') }}</td>
+                                    <td>{{ record.vehicle.name }}</td>
+                                    <td>{{ record.description[:50] }}{% if record.description|length > 50 %}...{% endif %}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Последние заправки -->
+        <div class="col-md-6 mb-4">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="card-title mb-0">Последние заправки</h5>
+                    <a href="{{ url_for('fuel') }}" class="btn btn-sm btn-primary">Все записи</a>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-sm">
+                            <thead>
+                                <tr>
+                                    <th>Дата</th>
+                                    <th>Транспорт</th>
+                                    <th>Количество</th>
+                                    <th>Стоимость</th>
+                </tr>
+            </thead>
+            <tbody>
+                                {% for record in fuel_records[:5] %}
+                <tr>
+                                    <td>{{ record.date.strftime('%d.%m.%Y') }}</td>
+                                    <td>{{ record.vehicle.name }}</td>
+                                    <td>{{ "%.1f"|format(record.fuel_quantity) }} л</td>
+                                    <td>{{ "%.2f"|format(record.fuel_cost) }} руб</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% block scripts %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    // Получаем данные для графиков
+    Promise.all([
+        fetch('/api/fuel_data').then(response => response.json()),
+        fetch('/api/maintenance_data').then(response => response.json())
+    ]).then(([fuelData, maintenanceData]) => {
+        // График расхода топлива
+        new Chart(document.getElementById('fuelChart'), {
+            type: 'line',
+            data: {
+                labels: fuelData.labels,
+                datasets: [{
+                    label: 'Расход топлива (л/100км)',
+                    data: fuelData.data,
+                    borderColor: 'rgb(75, 192, 192)',
+                    tension: 0.1
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+
+        // График ТО
+        new Chart(document.getElementById('maintenanceChart'), {
+            type: 'line',
+            data: {
+                labels: maintenanceData.labels,
+                datasets: [{
+                    label: 'Количество ТО',
+                    data: maintenanceData.data,
+                    borderColor: 'rgb(255, 99, 132)',
+                    tension: 0.1
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+    });
+</script>
+{% endblock %}
+{% endblock %}

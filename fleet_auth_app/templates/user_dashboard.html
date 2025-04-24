@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>Панель пользователя</h2>
+
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Транспортные средства</h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Название</th>
+                                    <th>Статус</th>
+                                    <th>Пробег</th>
+                                    <th>Действия</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for vehicle in vehicles %}
+                                <tr>
+                                    <td>{{ vehicle.name }}</td>
+                                    <td>
+                                        <span class="badge {% if vehicle.status == 'active' %}bg-success{% elif vehicle.status == 'maintenance' %}bg-warning{% else %}bg-danger{% endif %}">
+                                            {{ vehicle.status }}
+                                        </span>
+                                    </td>
+                                    <td>{{ vehicle.mileage }} км</td>
+                                    <td>
+                                        <a href="{{ url_for('vehicle_details', id=vehicle.id) }}" class="btn btn-sm btn-info">
+                                            <i class="bi bi-eye"></i>
+                                        </a>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 
